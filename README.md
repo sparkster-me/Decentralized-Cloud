@@ -150,7 +150,7 @@ Items not included in this release, but will be included in future releases:
 
 ## Outstanding Tasks
 
-This section lists features that didn't make into this release but are slated to be implemented in a future update.
+This section lists features that didn't make it into this release but are slated to be implemented in a future update.
 - User-friendly exception messages. Right now, messages are too developer-centric.
 - Right now, the only way to change the node's options are through the command line; options are neither saved to a file, nor is there a way to read options from a configuration file.
 
