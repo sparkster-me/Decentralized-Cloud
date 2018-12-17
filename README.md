@@ -119,6 +119,8 @@ The block chain is written in C++. You will need a compiler that supports C++ 20
 2. Open `BlockChainComponents.sln` in Visual Studio and build the solution. We're using Visual Studio 2017 for this project.
 3. You can choose to build the full solution or individual nodes. Visual Studio will automatically download any NuGet packages it needs. For the cases where NuGet is not an option such as with `OpenDHT,` the solution already points to it and it will be linked to the binaries.
 4. The individual nodes are placed in `BlockChainComponents/x64`.
+5. If you're running a verifier node, you'll need to place the dll files inside `dlls` in the same directory you're running the node from.
+6. You will also need the [Visual C++ 2017 runtime libraries](https://aka.ms/vs/15/release/vc_redist.x64.exe).
 
 ## Usage
 
