@@ -259,6 +259,8 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+*.key
+*.dat
 /MasterNode/cert.key
 /MasterNode/pk.key
 /ComputeNode/ComputeNode.rc
