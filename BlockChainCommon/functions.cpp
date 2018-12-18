@@ -221,7 +221,7 @@ std::string dhtGet(dht::DhtRunner* dht, const std::string key) {
 }
 
 void dhtPut(dht::DhtRunner* dht, const std::string& key, const std::string& value) {
-	dht->put(dht::InfoHash::get(key), dht::Value(value), [](bool ok) {},,true);
+	dht->put(dht::InfoHash::get(key), dht::Value(value));
 	
 }
 

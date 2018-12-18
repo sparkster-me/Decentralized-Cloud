@@ -803,7 +803,6 @@ void addChildNode(ipfs::Client& client, std::string& source,const std::string& c
 	dhtPut(dhtNode, std::string(tree + std::string(CHARACTER_DELIMITER) + tid + std::string(CHARACTER_DELIMITER) + objectId), objectHash);
 
 	send(std::move(std::string(source)), channelId, CommandType::stateChange, txid, objectId, objectHash);
-	pCount++;
 	// Link the object to root
 	linkToRoot(client, tree + std::string(CHARACTER_DELIMITER)+tid, objectId, objectHash,txid);
 	// If template then build the new data tree 
@@ -900,31 +899,6 @@ std::string updateValues(std::string oldObject,std::string newObject) {
 	}
 
 	return oldObj.dump();
-}
-
-// Fetch transaction details for the given transaction id
-void fetchTransaction(std::string&& source,std::string&& channelId, std::string&& txid) {
-	dhtGet(dhtNode, std::string(TRANSACTION_TREE)+std::string(CHARACTER_DELIMITER) + txid, [&source,&channelId, &txid](const std::string& hash) {
-		if (hash.empty()) {
-			send(std::move(source),channelId, CommandType::exception, txid, "", std::string(MSG_TRANSACTION_NOT_FOUND));
-			return;
-		}
-		std::string data(fetchObject(hash));
-		send(std::move(source),channelId, CommandType::fetchTx, txid, "", data);
-	});
-}
-
-// Fetch block details for the given block number
-void fetchBlock(std::string&& source, std::string&& channelId, std::string&& txid, std::string&& b) {
-	dhtGet(dhtNode, std::string(BLOCK_TREE) + std::string(CHARACTER_DELIMITER) + b, [&source,&channelId,&txid](const std::string& hash) {
-		if (not hash.empty()) {
-			std::string data(fetchObject(hash));
-			send(std::move(source), channelId, CommandType::fetchBlock, txid, "", data);
-			return;
-		}
-		send(std::move(source), channelId, CommandType::exception, txid, "", std::string(MSG_BLOCK_NOT_FOUND));
-	});
-	
 }
 
 // Adds the given transaction to the transaction tree in IPFS

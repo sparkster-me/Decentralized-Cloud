@@ -268,5 +268,4 @@ __pycache__/
 /ComputeNode/cert.key
 /ComputeNode/pk.key
 /MasterNode/masternodes.dat
-/StorageNodeTest/WSClient.cpp
 /enc_temp_folder/7b3d54ccf78c16de5ec42513fe3b4455/main.cpp

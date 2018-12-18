@@ -1,11 +1,8 @@
 #include "../MasterNodeLib/masterNodeLib.h"
 int main(int argc, char* argv[]) {
 	try {
-		opt::options_description optionsList("MasterNode command options");
-		optionsList.add_options()
-		("s", opt::value<time_t>(&openVotingStartMinute)->default_value(openVotingStartMinute), "start");
 		command_params params;
-		parseArgs(argc, argv,&params,optionsList);
+		parseArgs(argc, argv,&params);
 		std::cout << "Starting Master Node" << std::endl;
 		lastRoundTimestamp = getCurrentTimestamp();
 		updateNextVotingTimestamp();
@@ -50,9 +47,7 @@ int main(int argc, char* argv[]) {
 					return;
 				Transaction& tx = transactions.at(txId);
 				tx.verifyHash(hash); // Will update totalVerified if passes
-				std::cout << "\n verification Result : " << hash << std::endl;
 				if (tx.getTotalVerified() >= MAJORITY_THRESHOLD) {
-					std::cout << "\n verification Result MAJORITY_THRESHOLD Success : " << hash << std::endl;
 					// If this Master Node is the one that spawned the Compute Node for this transaction, it will also be
 					// the one to tell the Compute Node to commit the transaction.
 					// It will also be the one to send the result of the code's execution back to the client.
@@ -63,7 +58,6 @@ int main(int argc, char* argv[]) {
 						json j;
 						j["txid"] = tx.getTxId();
 						j["data"] = tx.getOutput();
-						std::cout << "\n verification Result User Response : " << j.dump() << std::endl;
 						wsServer->send(tx.getPublicKey(), j.dump());
 					}
 					if (isBlockProducer()) {
@@ -143,7 +137,6 @@ int main(int argc, char* argv[]) {
 				if (it != transactions.end()) {
 					it->second.verifyHash(hash);
 					it->second.setOutput(output);
-					std::cout << "Tx Data : " << it->second.toJson().dump() << std::endl;
 				} else {
 					Transaction tx(txId, hash, output);
 					tx.verifyHash(hash); // Verify 1.
