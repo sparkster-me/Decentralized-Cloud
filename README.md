@@ -1,7 +1,7 @@
 # Sparkster Decentralized Cloud
 
 <p align="center">
-  <img src="images/sparkster.png" width="200" alt = "Sparkster logo">
+  <img src="images/sparkster.png" width="200" alt = "Sparkster logo" />
 </p>
 
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
