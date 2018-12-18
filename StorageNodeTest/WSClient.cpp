@@ -20,7 +20,8 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 class WSClient {
 public:
-	std::string const host = "192.168.7.120";
+	// Please change the IP Address to the Storage Node ip address
+	std::string const host = "localhost";
 	std::string const port = "1033";
 	std::string const CONNECTION_REQUEST = "c:1|txid:1234567890|k:0123456789|tid:9876543210|tm:1944631469190";
 	json send(std::string text) {
