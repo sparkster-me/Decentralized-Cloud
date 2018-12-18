@@ -1,4 +1,4 @@
-# sparkster-block-chain
+# Sparkster Decentralized Cloud
 
 [Sparkster logo](images/sparkster.png)
 
