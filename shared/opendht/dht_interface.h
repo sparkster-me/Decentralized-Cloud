@@ -40,7 +40,7 @@ public:
     virtual NodeStatus getStatus() const = 0;
 
     /**
-     * Get the ID of the node.
+     * Get the ID of the DHT node.
      */
     virtual const InfoHash& getNodeId() const = 0;
 
@@ -216,7 +216,7 @@ public:
      */
     virtual void setLoggers(LogMethod error = NOLOG, LogMethod warn = NOLOG, LogMethod debug = NOLOG)
     {
-        DHT_LOG.DEBUG = debug;
+        DHT_LOG.DBG = debug;
         DHT_LOG.WARN = warn;
         DHT_LOG.ERR = error;
     }

@@ -9,16 +9,16 @@ void from_json(const json&j, Transaction& tx) {
 }
 
 Transaction::Transaction() { m_computeNode = false; }
-Transaction::Transaction(std::string txId, time_t timestamp, bool computeNode) {
+Transaction::Transaction(const std::string& txId, const time_t& timestamp) {
 	m_txId = txId;
 	m_timestamp = timestamp;
-	m_computeNode = computeNode;
+	m_receivedFullTransaction  = m_computeNode = true;
 }
 
-Transaction::Transaction(std::string txId, std::string hash, std::string output) {
+Transaction::Transaction(const std::string& txId, const std::string& hash, const time_t& timestamp) {
 	m_txId = txId;
 	m_lastValidHash = hash;
-	m_output = output;
+	m_timestamp = timestamp;
 }
 
 time_t Transaction::getTimeStamp() const {
@@ -33,7 +33,7 @@ std::string Transaction::getTenantId() const {
 	return m_tenantId;
 }
 
-std::string Transaction::getCode() const {
+std::string Transaction::getFunctionId() const {
 	return m_code;
 }
 
@@ -59,6 +59,8 @@ std::string Transaction::getException() const {
 
 void Transaction::setOutput(const std::string& output) {
 	m_output = output;
+	// One of the conditions for verification is now satisfied.
+	m_receivedOutput = true;
 }
 
 void Transaction::setInput(const std::string& input) {
@@ -73,7 +75,7 @@ int Transaction::getTotalVerified() const {
 	return m_totalVerified;
 }
 
-long Transaction::getBlockId() const {
+size_t Transaction::getBlockId() const {
 	return m_blockId;
 }
 
@@ -98,8 +100,8 @@ bool Transaction::verifyHash(const std::string& hash) {
 	return false;
 }
 
-void Transaction::setBlockId(const long blockid) {
-	m_blockId = blockid;
+void Transaction::setBlockId(const size_t& blockId) {
+	m_blockId = blockId;
 }
 
 void Transaction::setTenantId(const std::string& id) {
@@ -114,8 +116,8 @@ void Transaction::setMasterNodeId(const std::string& id) {
 	m_masterNodeId = id;
 }
 
-void Transaction::setCode(const std::string& code) {
-	m_code = code;
+void Transaction::setFunctionId(const std::string& id) {
+	m_code = id;
 }
 
 void Transaction::setSignature(const std::string& signature) {
@@ -145,7 +147,6 @@ json Transaction::toJson() const {
 }
 
 void Transaction::fromJson(const json& j) {
-	std::cout << j.dump() << std::endl;
 	m_txId = j["txid"].get<std::string>();
 	m_timestamp = j["t"].get<time_t>();
 	m_lastValidHash = j["h"].get<std::string>();
@@ -158,4 +159,33 @@ void Transaction::fromJson(const json& j) {
 	m_output = j["o"].get<std::string>();
 	m_input = j["i"].get<std::string>();
 	m_exception = j["e"].get<std::string>();
+	m_receivedFullTransaction = true;
+}
+
+bool Transaction::receivedOutput() const {
+	return m_receivedOutput;
+}
+
+bool Transaction::canSend() const {
+	return !m_sentToClient && m_computeNode;
+}
+
+void Transaction::setSentToClient() {
+	m_sentToClient = true;
+}
+
+bool Transaction::receivedFullTransaction() const {
+	return m_receivedFullTransaction;
+}
+
+bool Transaction::isVerified() const {
+	return m_totalVerified >= MAJORITY_THRESHOLD && m_receivedFullTransaction && m_receivedOutput;
+}
+
+bool Transaction::inBlock() const {
+	return m_inBlock;
+}
+
+void Transaction::setInBlock() {
+	m_inBlock = true;
 }

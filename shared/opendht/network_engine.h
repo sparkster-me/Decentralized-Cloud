@@ -421,7 +421,7 @@ private:
     /***************
      *  Constants  *
      ***************/
-    static constexpr size_t MAX_REQUESTS_PER_SEC {1600};
+    static constexpr size_t MAX_REQUESTS_PER_SEC {6400};
     /* the length of a node info buffer in ipv4 format */
     static const constexpr size_t NODE4_INFO_BUF_LEN {HASH_LEN + sizeof(in_addr) + sizeof(in_port_t)};
     /* the length of a node info buffer in ipv6 format */

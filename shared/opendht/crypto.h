@@ -86,8 +86,16 @@ struct OPENDHT_PUBLIC PublicKey
 
     PublicKey& operator=(PublicKey&& o) noexcept;
 
+    /**
+     * Get public key fingerprint
+     */
     InfoHash getId() const;
+
+    /**
+     * Get public key long fingerprint
+     */
     PkId getLongId() const;
+
     bool checkSignature(const Blob& data, const Blob& signature) const;
     Blob encrypt(const Blob&) const;
 
@@ -133,6 +141,7 @@ struct OPENDHT_PUBLIC PrivateKey
     PrivateKey(const Blob& import, const std::string& password = {});
     ~PrivateKey();
     explicit operator bool() const { return key; }
+
     PublicKey getPublicKey() const;
     Blob serialize(const std::string& password = {}) const;
 
@@ -368,6 +377,7 @@ struct OPENDHT_PUBLIC Certificate {
 
     /** Same as getPublicKey().getId() */
     InfoHash getId() const;
+    /** Same as getPublicKey().getLongId() */
     PkId getLongId() const;
 
     /** Read certificate Common Name (CN) */
@@ -404,8 +414,20 @@ struct OPENDHT_PUBLIC Certificate {
 
     std::string print() const;
 
+    /**
+     * As a CA, revoke a certificate, adding it to
+     * the attached Certificate Revocation List (CRL)
+     */
     void revoke(const PrivateKey&, const Certificate&);
+
+    /**
+     * Get the list of certificates revoked as as CA.
+     */
     std::vector<std::shared_ptr<RevocationList>> getRevocationLists() const;
+
+    /**
+     * Attach existing revocation list.
+     */
     void addRevocationList(RevocationList&&);
     void addRevocationList(std::shared_ptr<RevocationList>);
 
@@ -508,13 +530,13 @@ public:
     ~secure_vector() { clean(); }
 
     static secure_vector<T> getRandom(size_t size) {
-        secure_vector<T> ret(size/sizeof(T));
+        secure_vector<T> ret(size);
         crypto::random_device rdev;
-        #ifdef _WIN32
+#ifdef _WIN32
         std::uniform_int_distribution<int> rand_byte{ 0, std::numeric_limits<uint8_t>::max() };
-		#else
+#else
         std::uniform_int_distribution<uint8_t> rand_byte;
-		#endif
+#endif
         std::generate_n((uint8_t*)ret.data_.data(), ret.size()*sizeof(T), std::bind(rand_byte, std::ref(rdev)));
         return ret;
     }

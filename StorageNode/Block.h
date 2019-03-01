@@ -3,22 +3,22 @@
 #include <common/functions.h>
 
 using json = nlohmann::json;
-class Block{
+class Block {
 
 private:
 	std::string number;
 	std::string hash;
-	std::string jsonString;	
+	std::string jsonString;
 	int totalVerified;
-public: 
+public:
 	Block(const int number, const std::string& hash);
-	Block(const int number,const std::string& hash,const std::string& data);
-	std::string getHash();	
+	Block(const int number, const std::string& hash, const std::string& data);
+	std::string getHash();
 	std::string getString();
 	void setString(const std::string& data);
 	int getTotalVerified() const;
 	void incrementTotalVerified();
-	bool verifyHash(const std::string& hash);	
+	bool verifyHash(const std::string& hash);
 };
 
 

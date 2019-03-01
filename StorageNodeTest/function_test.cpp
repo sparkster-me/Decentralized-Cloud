@@ -1,16 +1,17 @@
 #include "pch.h"
 
-std::string const functionId = random_generator();
-std::string const funPostDef = "function myFunction(x, y) { return x+y;}";
-std::string const funPutDef = "function myFunction(x, y) { return x*y;}";
+std::string functionId = random_generator();
+std::string const funPostDef = "{\"code\":\"function myFunction(x, y) { return x+y;}\"}";
+std::string const funPutDef = "{\"code\":\"function myFunction(x, y) { return x*y;}\"}";
 
 /*
 Store function definition in storage node
 */
 TEST(Function, AddFunction) {
-  std::string input = "c:6|txid:1234567890|k:0123456789|tid:9876543210|tm:1944631469190|cmds:3 " + functionId + " " + encode(funPostDef);
+  std::string input = "c:6|txid:1234567890|k:0123456789|tid:9876543210|cmds:3 " + encode(funPostDef);
   json response = getWSClient()->send(input);
-  EXPECT_EQ(response["txid"].get<std::string>(), "1234567890");
+  EXPECT_EQ(response["ack"]["id"].get<std::string>(), response["result"]["txid"].get<std::string>());
+  functionId = response["result"]["id"].get<std::string>();
   EXPECT_TRUE(true);
 }
 
@@ -18,10 +19,10 @@ TEST(Function, AddFunction) {
 Retrieve function definition in storage node
 */
 TEST(Function, fetchFunction) {
-	std::string input = "c:10|txid:1234567890|k:0123456789|tid:9876543210|tm:1944631469190|id:" + functionId;
-	json response = getWSClient()->get(input);
-	EXPECT_EQ(response["txid"].get<std::string>(), "1234567890");
-	EXPECT_EQ(response["data"].get<std::string>(), funPostDef);
+	std::string input = "c:10|txid:1234567890|k:0123456789|tid:9876543210|id:" + functionId;
+	json response = getWSClient()->send(input);
+	EXPECT_EQ(response["ack"]["id"].get<std::string>(), response["result"]["txid"].get<std::string>());
+	EXPECT_EQ(response["result"]["data"].get<std::string>(), funPostDef);
 	EXPECT_TRUE(true);
 }
 
@@ -29,10 +30,9 @@ TEST(Function, fetchFunction) {
 Update function definition in storage node
 */
 TEST(Function, updateFunction) {
-	std::string input = "c:6|txid:1234567890|k:0123456789|tid:9876543210|tm:1944631469190|cmds:6 " + functionId + " " + encode(funPutDef);
+	std::string input = "c:6|txid:1234567890|k:0123456789|tid:9876543210|cmds:6 " + functionId + " " + encode(funPutDef);
 	json response = getWSClient()->send(input);
-	EXPECT_EQ(response["txid"].get<std::string>(), "1234567890");
-	
+	EXPECT_EQ(response["ack"]["id"].get<std::string>(), response["result"]["txid"].get<std::string>());	
 	EXPECT_TRUE(true);
 }
 
@@ -40,10 +40,10 @@ TEST(Function, updateFunction) {
 Retrieve updated function definition in storage node
 */
 TEST(Function, fetchUpdatedFunction) {
-	std::string input = "c:10|txid:1234567890|k:0123456789|tid:9876543210|tm:1944631469190|id " + functionId;
-	json response = getWSClient()->get(input);
-	EXPECT_EQ(response["txid"].get<std::string>(), "1234567890");
-	EXPECT_EQ(response["data"].get<std::string>(), funPutDef);
+	std::string input = "c:10|txid:1234567890|k:0123456789|tid:9876543210|id:" + functionId;
+	json response = getWSClient()->send(input);
+	EXPECT_EQ(response["ack"]["id"].get<std::string>(), response["result"]["txid"].get<std::string>());
+	EXPECT_EQ(response["result"]["data"].get<std::string>(), funPutDef);
 	EXPECT_TRUE(true);
 }
 
@@ -51,10 +51,10 @@ TEST(Function, fetchUpdatedFunction) {
 Delete function definition in storage node
 */
 TEST(Function, deleteFunction) {
-	std::string input = "c:10|txid:1234567890|k:0123456789|tid:9876543210|tm:1944631469190|cmds:9 " + functionId;
+	std::string input = "c:6|txid:1234567890|k:0123456789|tid:9876543210|cmds:9 " + functionId;
 	json response = getWSClient()->send(input);
-	EXPECT_EQ(response["txid"].get<std::string>(), "1234567890");
-	EXPECT_EQ(response["data"].get<std::string>(), "deleted successfully");
+	EXPECT_EQ(response["ack"]["id"].get<std::string>(), response["result"]["txid"].get<std::string>());
+	EXPECT_EQ(response["result"]["data"].get<std::string>(), "deleted successfully");
 	EXPECT_TRUE(true);
 }
 
@@ -62,9 +62,9 @@ TEST(Function, deleteFunction) {
 Retrieve deleted function definition in storage node with empty response
 */
 TEST(Function, fetchDeletedFunction) {
-	std::string input = "c:10|txid:1234567890|k:0123456789|tid:9876543210|tm:1944631469190|id " + functionId;
-	json response = getWSClient()->get(input);
-	EXPECT_EQ(response["txid"].get<std::string>(), "1234567890");
-	EXPECT_EQ(response["data"].get<std::string>(), "");
+	std::string input = "c:10|txid:1234567890|k:0123456789|tid:9876543210|id:" + functionId;
+	json response = getWSClient()->send(input);
+	EXPECT_EQ(response["ack"]["id"].get<std::string>(), response["result"]["txid"].get<std::string>());
+	EXPECT_EQ(response["result"]["data"].get<std::string>(), "No function found for the given Id");
 	EXPECT_TRUE(true);
 }
