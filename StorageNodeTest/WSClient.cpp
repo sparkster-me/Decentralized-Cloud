@@ -20,9 +20,8 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 class WSClient {
 public:
-	// Please change the IP Address to the Storage Node ip address
-	std::string const host = "localhost";
-	std::string const port = "1033";
+	std::string const host = "192.168.7.22";
+	std::string const port = "2045";
 	std::string const CONNECTION_REQUEST = "c:1|txid:1234567890|k:0123456789|tid:9876543210|tm:1944631469190";
 	json send(std::string text) {
 		try
@@ -59,9 +58,9 @@ public:
 			ws.read(buffer);
 
 			// If we get here then the connection is closed gracefully
-			std::string res = boost::beast::buffers_to_string(buffer.data());
+			std::string ack = boost::beast::buffers_to_string(buffer.data());
 
-			std::cout << "Acknowledgement : " + res << std::endl;
+			std::cout << "Acknowledgement : " + ack << std::endl;
 
 			buffer.consume(buffer.size());
 			
@@ -75,7 +74,7 @@ public:
 			ws.close(websocket::close_code::normal);
 
 			// If we get here then the connection is closed gracefully
-			res = boost::beast::buffers_to_string(buffer.data());
+			std::string res = boost::beast::buffers_to_string(buffer.data());
 
 			// The buffers() function helps print a ConstBufferSequence
 			std::cout << "Response : " + res << std::endl;
@@ -84,7 +83,8 @@ public:
 				return j;
 			}
 			else {
-				j = j.parse( res);
+				j["result"] = j.parse( res);
+				j["ack"] = j.parse(ack);
 				return j;
 			}
 		}

@@ -22,9 +22,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\shared\ed25519\src\add_scalar.c" />
-    <ClCompile Include="..\shared\ed25519\src\ed25519_keypair.c" />
     <ClCompile Include="..\shared\ed25519\src\fe.c" />
     <ClCompile Include="..\shared\ed25519\src\ge.c" />
+    <ClCompile Include="..\shared\ed25519\src\keypair.c" />
     <ClCompile Include="..\shared\ed25519\src\key_exchange.c" />
     <ClCompile Include="..\shared\ed25519\src\sc.c" />
     <ClCompile Include="..\shared\ed25519\src\seed.c" />
@@ -33,15 +33,16 @@
     <ClCompile Include="..\shared\ed25519\src\verify.c" />
     <ClCompile Include="blockChainNode.cpp" />
     <ClCompile Include="functions.cpp" />
+    <ClCompile Include="gossip.cpp" />
     <ClCompile Include="transaction.cpp" />
     <ClCompile Include="webSocketServer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\common\blockChainNode.h" />
+    <ClInclude Include="..\shared\common\commonDefines.h" />
     <ClInclude Include="..\shared\common\functions.h" />
     <ClInclude Include="..\shared\common\transaction.h" />
     <ClInclude Include="..\shared\common\types.h" />
-    <ClInclude Include="..\shared\common\webSocketServer.h" />
     <ClInclude Include="..\shared\ed25519\src\ed25519.h" />
     <ClInclude Include="..\shared\ed25519\src\fe.h" />
     <ClInclude Include="..\shared\ed25519\src\fixedint.h" />
@@ -49,6 +50,7 @@
     <ClInclude Include="..\shared\ed25519\src\precomp_data.h" />
     <ClInclude Include="..\shared\ed25519\src\sc.h" />
     <ClInclude Include="..\shared\ed25519\src\sha512.h" />
+    <ClInclude Include="..\shared\gossip.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -120,7 +122,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32_LEAN_AND_MEAN;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32_LEAN_AND_MEAN;_MBCS;_CRT_NO_VA_START_VALIDATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4804;4800;4101;4267;4244;4503;4273;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -182,6 +184,8 @@
     <Import Project="..\packages\msgpack-cpp.1.4.2-mtk2\build\native\msgpack-cpp.targets" Condition="Exists('..\packages\msgpack-cpp.1.4.2-mtk2\build\native\msgpack-cpp.targets')" />
     <Import Project="..\packages\websocketpp-mtk.repack.0.7.0-mtk19\build\native\websocketpp-mtk.repack.targets" Condition="Exists('..\packages\websocketpp-mtk.repack.0.7.0-mtk19\build\native\websocketpp-mtk.repack.targets')" />
     <Import Project="..\packages\boost_regex-vc141.1.68.0.0\build\boost_regex-vc141.targets" Condition="Exists('..\packages\boost_regex-vc141.1.68.0.0\build\boost_regex-vc141.targets')" />
+    <Import Project="..\packages\boost_zlib-vc141.1.68.0.0\build\boost_zlib-vc141.targets" Condition="Exists('..\packages\boost_zlib-vc141.1.68.0.0\build\boost_zlib-vc141.targets')" />
+    <Import Project="..\packages\boost_iostreams-vc141.1.68.0.0\build\boost_iostreams-vc141.targets" Condition="Exists('..\packages\boost_iostreams-vc141.1.68.0.0\build\boost_iostreams-vc141.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -193,5 +197,7 @@
     <Error Condition="!Exists('..\packages\boost_regex-vc141.1.68.0.0\build\boost_regex-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_regex-vc141.1.68.0.0\build\boost_regex-vc141.targets'))" />
     <Error Condition="!Exists('..\packages\v8.redist-v141-x64.7.1.302.4\build\native\v8.redist-v141-x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\v8.redist-v141-x64.7.1.302.4\build\native\v8.redist-v141-x64.props'))" />
     <Error Condition="!Exists('..\packages\v8-v141-x64.7.1.302.4\build\native\v8-v141-x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\v8-v141-x64.7.1.302.4\build\native\v8-v141-x64.props'))" />
+    <Error Condition="!Exists('..\packages\boost_zlib-vc141.1.68.0.0\build\boost_zlib-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_zlib-vc141.1.68.0.0\build\boost_zlib-vc141.targets'))" />
+    <Error Condition="!Exists('..\packages\boost_iostreams-vc141.1.68.0.0\build\boost_iostreams-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_iostreams-vc141.1.68.0.0\build\boost_iostreams-vc141.targets'))" />
   </Target>
 </Project>

@@ -1,0 +1,91 @@
+var stateChangeCmds = "";
+function execute(jsonStr, templateId, entityType, httpMethod, isAPICall) {
+    if (!isAPICall) {
+		jsonStr = jsonStr.replace(/"([\w]+)":/g, function($0, $1) {
+			return ('"' + $1.toLowerCase() + '":');
+		});
+		httpMethod = httpMethod.toUpperCase();
+        var jsonObj = JSON.parse(jsonStr);
+        var collectionsObj = jsonObj.collections;
+        var collectionName = "";
+        var keys = Object.keys(collectionsObj);
+        /*jsonObj.collections should only have one collection.
+        If it has more than one, the other one is a rowfilter.*/
+        for (var i = 0, n = keys.length; i < n; i++) {
+            if (keys[i] != "rowfilter") {
+                collectionName = keys[i];
+                break;
+            }
+        }
+        var collectionsObj = collectionsObj[collectionName];
+		var rowsetobj = (collectionsObj.rowset == undefined) ? '' : collectionsObj.rowset[0];
+		var rowset = JSON.stringify(rowsetobj);
+        /*A POST verb means that we're creating something, such as a template*/
+        if (httpMethod == "POST") {
+            stateChangeCmds = (stateChangeCmds == "") ? ("c:6|tid:" + tenantid + "|cmds:") : (",cmds:"); /*State change*/
+            if (entityType == "template") {
+                stateChangeCmds += "1 " + encode(jsonStr);
+            } else {
+                /* This is a document create, so we can get the template id directly from entityName.*/
+                stateChangeCmds += "2 " + templateId + " " + encode(rowset);
+            }
+        }
+        /*Next, in the case of a fetch, delete or update, we need to get a C-style expression from the rowfilter*/
+        if (httpMethod == "PUT" || httpMethod == "GET" || httpMethod == "DELETE") {
+            var rowFilterObj = collectionsObj.rowfilter;
+            var expr = "";
+            for (var i = 0, n = rowFilterObj.length, current = {}; i < n; i++) {
+                current = rowFilterObj[i];
+                if ("logicaloperator" in current) {
+                    /*We need to change the logic symbols according to Appendix C.*/
+                    var logicalOperator = current.logicaloperator;
+                    if (logicalOperator == "&&")
+                        logicalOperator = "&";
+                    else if (logicalOperator == "||")
+                        logicalOperator = "|";
+                    expr += logicalOperator;
+                }
+                if ("expressionbegin" in current)
+                    expr += current.expressionbegin;
+                if ("attribute" in current)
+                    expr += "\"" + current.attribute + "\"";
+                if ("operator" in current) {
+                    /*We need to sanitize the operators according to Appendix C.*/
+                    var operator = current.operator;
+                    if (operator == "==")
+                        operator = "=";
+                    else if (operator == "!=")
+                        operator = "<>";
+                    expr += operator;
+                }
+                if ("value" in current)
+                    expr += "\"" + current.value + "\"";
+                if ("expressionend" in current)
+                    expr += current.expressionend;
+            }
+
+            if (httpMethod == "PUT") {
+                /*A PUT operation is an update. In this case, the jsonSTR is a representation of the fields to update, and entityName is the document template id where the document to update belongs.*/
+                if (stateChangeCmds == "") {
+                    stateChangeCmds = "c:6|tid:" + tenantid + "|cmds:5 " + templateId + " " + expr + " " + encode(rowset);
+                } else {
+                    stateChangeCmds += ",cmds:5 " + templateId + " " + expr + " " + encode(rowset);
+                }
+            } else if (httpMethod == "DELETE") {
+                /*In this case, the entityName is the template where the document in question belongs.*/
+                if (stateChangeCmds == "") {
+                    stateChangeCmds = "c:6|tid:" + tenantid + "|cmds:8 " + templateId + " " + expr;
+                } else {
+                    stateChangeCmds += ",cmds:8 " + templateId + " " + expr;
+                }
+            } else {
+                /*get*/
+                /*In this case, the entityName is the document template id where the document to fetch belongs.*/
+                var commandString = "c:12|tid:" + tenantid + "|id:" + templateId + "|expression:" + expr;
+                /* Here, we need to fetch the document over sockets. TODO*/
+                return fetchDocument(commandString);
+            }
+
+        } /* If PUT DELETE or GET*/
+    } /* If not API call*/
+}

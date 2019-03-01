@@ -22,8 +22,10 @@ This repository contains three nodes that are discussed on this page. The nodes 
     - [Compute & Verifier Node](#compute-verifier-node)
     - [Storage Node](#storage-node)
 - [Status](#status)
+- [Change Log](#change-log)
 - [Install](#install)
 - [Usage](#usage)
+    - [Developer Documentation](#developer-documentation)
 - [Future Work](#future-work)
 - [Known Issues](#known-issues)
 - [Outstanding Tasks](#outstanding-tasks)
@@ -69,12 +71,10 @@ The Master Nodes are responsible for handling incoming requests from the client.
 
 The Master Node is made up of two projects in the repository. The first of these is the `MasterNode` projects that builds the `MasterNode.exe` executable, and the second one is the `MasterNodeLib` project that builds `MasterNodeLib.lib`. The tests for the Master Node and the executable project statically link against `MasterNodeLib.lib`.
 
-**Note**: In the current release, we have disallowed the ability to create transactions and execute code on the network. The Master Nodes will allow you to send code to the block chain once we complete testing this part of the network.
-
 #### Block Producer
 
 A Master Node is able to become a Block Producer by participating in a voting process that selects 21 Master Nodes. This process is executed at a fixed interval inside an hour and is known as open voting. The interval starts at timestamp `tA` and extends through the remainder of the hour, `tB`; therefore, `tB` is the zeroth second of the current hour into which the interval extends. Once `[tA, tB]` elapses, a new set of 21 Master Nodes become the Master Nodes for the next hour. Voting proceeds as follows.
-- When voting opens, a Master Node will sign `tA`. Because the interval always starts at a fixed point, every Master Node is able to predict the next timestamp when voting will begin by using the formula `n + u - 60(60 - m)` where `n` is the current timestamp, `u` is the number of seconds until the next hour, and `m` is the number of minutes past the hour that represents `tA`. From this, it follows that every Master Node that casts a vote will sign the same `tA`, provided that the Master Node is being thruthful.
+- When voting opens, a Master Node will sign `tA`. Because the interval always starts at a fixed point, every Master Node is able to predict the next timestamp when voting will begin by using the formula `n + u - 60(60 - m)` where `n` is the current timestamp, `u` is the number of seconds until the next hour, and `m` is the number of minutes past the hour that represents `tA`. Once the timestamp is initialized using the given formula, a Master Node only has to fast-forward the timestamp by one hour to obtain the next valid timestamp. From this, it follows that every Master Node that casts a vote will sign the same `tA`, provided that the Master Node is being thruthful.
 - The Master Node will notify all other Master Nodes of its signature. In this manner, all Master Nodes will receive all signatures from all other Master Nodes.
 - The receiving Master Node will first take `tA`, the sending Master Node's signature and the sending Master Node's public key. Given this information, it will verify the sending node's signature and make sure that the sending node signed the agreed upon timestamp.
 - Next, the receiving Master Node will compute a number based on the sending node's signature. This number is the sum of the ASCII values of the characters in the sending nodes signature.
@@ -110,9 +110,30 @@ A Storage Node is responsible for archiving data and executing state changes aga
     - It will eventually arrive at the document to retrieve or update.
     - If it has to update a document, it will update the indices during the update of the document so that the data is always current.
 
+#### Reliability
+
+Since we use the User Datagram Protocol for communication among nodes, node-to-node communication is unreliable by default. This is because UDP was created to facilitate lightweight message exchange with minimal overhead. The protocol provides no guarantee of message delivery, meaning that if a message is sent by one node, that node receives no guarantee that the message will be delivered to the recipient. In order to make message delivery more reliable, UDP messages are recommended to be no more than 256 bytes in size; the idea is that the larger the message, the more the chance increases of the message getting lost. This is because large messages are fragmented by the protocol at the Transport Layer, and if one fragment is lost, the entire message is lost.
+
+Many applications implementing UDP for communication implement their own mechanisms to provide reliability at the Application Layer, instead of switching to a reliable protocol such as the Transmission Control Protocol. This is also the path we have taken.
+
+We achieve reliability by performing the following steps:
+- First, we generate a nonce to identify the message we want to transmit.
+- Next, we put the entire message on the DHT.
+- Finally, we send a notification to the recipient to fetch the message from the DHT. The notification packet contains a three-letter prefix to indicate a notification packet, and the nonce of the packet to fetch. In this manner, we keep the size of the notification packet down so it is easy to transmit.
+
 ## Status
 
 We are conducting functional and integration testing; this code is not considered stable. Please see [the section on known issues](#known-issues) for issues that will be addressed in future updates.
+
+## Change Log
+
+### Alpha 0.2, released on 03/01/2019
+
+- The nodes manage system resources a lot better, performing regular clean-up routines to keep the memory footprint down.
+- Logging options can now be set using the command line through the use of `--l` and `--lf`. All messages are no longer dumped to the console; instead, only info log messages will appear on console. All other messages are written to the file set with `--lf`.
+- The ability to create, fetch, update and delete documents on the network is fully integrated. This functionality is accessed using the built-in `execute` function. Examples are provided in the developer documentation.
+- Developer documentation is complete.
+- Instead of using packet fragmentation, the nodes now put entire messages on the DHT and send the nonce of the packets to the recipient nodes. This method of transmission cuts down on network congestion.
 
 ## Install
 
@@ -128,13 +149,19 @@ The block chain is written in C++. You will need a compiler that supports C++ 20
 
 ```
 node.exe --help
-Usage: node.exe [--p port] [--ws port] [--b bootstrap_host[:port]] [--createaccount]
+Usage: node.exe [--p port] [--ws port] [--b bootstrap_host[:port]] [--createaccount] [--l level] [--lf filename]
 
 --w: Set the port that this node's web socket server listens on. If this node has no web socket server, this option will be ignored.
 --p: Set the port that this node's OpenDHT instance listens on. This is the port that other nodes will use to connect to this node.
 --b: Set a bootstrap node. The port given here should be the port supplied with --p.
 --createaccount: Generate an account ID and associated private key. This command will show the account seed, account ID and private key. The private key and seed should be kept in a secure location and can be used to recover the account ID.
+--l: Set log level. Options are trace, debug, info, warning, error and fatal and increase in priority. Setting a logging level will log all messages of the specified priority and higher, so the least verbose option here is fatal, and the most verbose option here is trace. Defaults to info if not provided, and falls back to trace logging if an invalid level is provided.
+--lf: Specifies the file where logs are stored. Defaults to log.log. The user under which this node is running should have write access to the specified location.
 ```
+
+## Developer Documentation
+
+Check the [developer documentation](examples.md) for instructions on writing code and deploying it onto the network.
 
 ## Future Work
 
@@ -148,12 +175,11 @@ Items not included in this release, but will be included in future releases:
 
 ## Known Issues
 
-- Nodes sometimes disconnect from their peers and messages are lost. We are working with the developers of OpenDHT to resolve this issue.
+None
 
 ## Outstanding Tasks
 
 This section lists features that didn't make it into this release but are slated to be implemented in a future update.
-- User-friendly exception messages. Right now, messages are too developer-centric.
 - Right now, the only way to change the node's options are through the command line; options are neither saved to a file, nor is there a way to read options from a configuration file.
 
 ## Future Research

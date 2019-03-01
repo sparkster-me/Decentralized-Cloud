@@ -2,7 +2,7 @@
 
 Block::Block(const int number, const std::string& hash) {
 	this->number = number;
-	this->hash = hash;	
+	this->hash = hash;
 	this->totalVerified = 1;
 }
 

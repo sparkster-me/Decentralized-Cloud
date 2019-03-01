@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\v8-v141-x64.7.1.302.4\build\native\v8-v141-x64.props" Condition="Exists('..\packages\v8-v141-x64.7.1.302.4\build\native\v8-v141-x64.props')" />
-  <Import Project="..\packages\v8.redist-v141-x64.7.1.302.4\build\native\v8.redist-v141-x64.props" Condition="Exists('..\packages\v8.redist-v141-x64.7.1.302.4\build\native\v8.redist-v141-x64.props')" />
+  <Import Project="..\packages\v8-v141-x64.7.1.302.33\build\native\v8-v141-x64.props" Condition="Exists('..\packages\v8-v141-x64.7.1.302.33\build\native\v8-v141-x64.props')" />
+  <Import Project="..\packages\v8.redist-v141-x64.7.1.302.33\build\native\v8.redist-v141-x64.props" Condition="Exists('..\packages\v8.redist-v141-x64.7.1.302.33\build\native\v8.redist-v141-x64.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -177,8 +177,6 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.0\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.0\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
-    <Error Condition="!Exists('..\packages\v8.redist-v141-x64.7.1.302.4\build\native\v8.redist-v141-x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\v8.redist-v141-x64.7.1.302.4\build\native\v8.redist-v141-x64.props'))" />
-    <Error Condition="!Exists('..\packages\v8-v141-x64.7.1.302.4\build\native\v8-v141-x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\v8-v141-x64.7.1.302.4\build\native\v8-v141-x64.props'))" />
     <Error Condition="!Exists('..\packages\boost.1.68.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost.1.68.0.0\build\boost.targets'))" />
     <Error Condition="!Exists('..\packages\boost_atomic-vc141.1.68.0.0\build\boost_atomic-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_atomic-vc141.1.68.0.0\build\boost_atomic-vc141.targets'))" />
     <Error Condition="!Exists('..\packages\boost_bzip2-vc141.1.68.0.0\build\boost_bzip2-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_bzip2-vc141.1.68.0.0\build\boost_bzip2-vc141.targets'))" />
@@ -223,5 +221,7 @@
     <Error Condition="!Exists('..\packages\boost_zlib-vc141.1.68.0.0\build\boost_zlib-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_zlib-vc141.1.68.0.0\build\boost_zlib-vc141.targets'))" />
     <Error Condition="!Exists('..\packages\boost-vc141.1.68.0.0\build\boost-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost-vc141.1.68.0.0\build\boost-vc141.targets'))" />
     <Error Condition="!Exists('..\packages\msgpack-cpp.1.4.2-mtk2\build\native\msgpack-cpp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\msgpack-cpp.1.4.2-mtk2\build\native\msgpack-cpp.targets'))" />
+    <Error Condition="!Exists('..\packages\v8.redist-v141-x64.7.1.302.33\build\native\v8.redist-v141-x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\v8.redist-v141-x64.7.1.302.33\build\native\v8.redist-v141-x64.props'))" />
+    <Error Condition="!Exists('..\packages\v8-v141-x64.7.1.302.33\build\native\v8-v141-x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\v8-v141-x64.7.1.302.33\build\native\v8-v141-x64.props'))" />
   </Target>
 </Project>

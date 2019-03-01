@@ -43,7 +43,8 @@ struct Socket {
         on_receive(std::move(on_receive)) {}
     SocketCb on_receive {};
 };
-
+static std::mt19937 c_rd{ dht::crypto::random_device{}() };
+static std::uniform_int_distribution<Tid> c_rand_id;
 struct Node {
     const InfoHash id;
 
@@ -137,8 +138,9 @@ struct Node {
      * @return the new id.
      */
     Tid getNewTid() {
-        ++transaction_id;
-        return transaction_id ? ++transaction_id : transaction_id;
+        /* ++transaction_id;
+        return transaction_id ? ++transaction_id : transaction_id; */
+		return c_rand_id(c_rd);
     }
 
     std::string toString() const;

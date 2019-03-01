@@ -177,6 +177,10 @@ class Client {
       /** [out] List of providers of `hash`. */
       Json* providers);
 
+  /**
+   Clear all existing bootstrap nodes
+  */
+  void ClearBootstrapNodes(Json* response);
   /** Get a raw IPFS block.
    *
    * Implements
