@@ -1,6 +1,6 @@
 // Number of master nodes who are eligible to be block producers in a round.
 #include <stdarg.h>
-#define TOTAL_MASTER_NODES 3
+#define TOTAL_MASTER_NODES 21
 #define MAJORITY_THRESHOLD TOTAL_MASTER_NODES*(2.0/3.0)
 #define PROTOCOL_SMUDGE 0
 #define PROTOCOL_OPENDHT 1
